@@ -19,8 +19,9 @@ DialogSettingTime::DialogSettingTime(QWidget *parent) :
 //    QTimer::singleShot(10,this,SLOT(hide()));  //TODO :: 5ka need this line
     tmr.setSingleShot(true);
     //    tmr.s
-connect(this, SIGNAL(change_volume()), volume_changer, SLOT(raise()));
-//    connect(this, &DialogSettingTime::change_volume, volume_changer, &Volume_changer::raise);
+
+    // ломается на этой функции
+    connect(this, &DialogSettingTime::change_volume, volume_changer, &Volume_changer::raise);
 
 }
 
