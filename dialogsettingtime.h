@@ -13,6 +13,7 @@ class DateTimeSettingWidget : public QDateTimeEdit
 public:
     QLabel *lbl;
     bool waitingProve;
+    bool is_sound_tuning = false;
     explicit DateTimeSettingWidget(QWidget *parent = 0);
 
     void setLabel(QLabel * in);
@@ -21,6 +22,7 @@ public:
 public slots:
     void nextSection();
     void moveUpOrSetTime();
+
 signals:
     void timeSetted();
 
@@ -55,6 +57,7 @@ private:
 public slots:
     void nextSection();
     void moveUpOrSetTime();
+    void make_exit();
 
 };
 

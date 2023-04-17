@@ -27,10 +27,6 @@ signals:
 public slots:
     void raise();
 
-
-public:
-    bool is_tunning_volume = false;
-
 private:
     QProcess *p = nullptr;
 

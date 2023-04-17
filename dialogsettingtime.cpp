@@ -20,7 +20,7 @@ DialogSettingTime::DialogSettingTime(QWidget *parent) :
     tmr.setSingleShot(true);
     //    tmr.s
 
-
+    // ломается на этой функции
     connect(this, &DialogSettingTime::change_volume, volume_changer, &Volume_changer::raise);
     connect(volume_changer, &Volume_changer::upd_sound_slider, ui->sound_slider, &QSlider::setValue);
 }
@@ -38,7 +38,7 @@ void DialogSettingTime::nextSection()
 
         if(dateTimeColumsCounter == 6) {
             emit change_volume();
-            volume_changer->is_tunning_volume = true;
+            ui->dateTimeEdit->nextSection();
         } else {
             ui->dateTimeEdit->nextSection();
             dateTimeColumsCounter++;
@@ -66,9 +66,8 @@ void DialogSettingTime::moveUpOrSetTime()
 {
     if (!this->isHidden()) {
 
-        if(volume_changer->is_tunning_volume) {
+        if(dateTimeColumsCounter == 6) {
             dateTimeColumsCounter = 0;
-            volume_changer->is_tunning_volume = false;
             qDebug() << "exit volume";
             ui->dateTimeEdit->waitingProve = false;
             ui->dateTimeEdit->setCurrentSection(QDateTimeEdit::YearSection);
@@ -80,6 +79,11 @@ void DialogSettingTime::moveUpOrSetTime()
         }
 
     }
+}
+
+void DialogSettingTime::make_exit()
+{
+    this->close();
 }
 
 DateTimeSettingWidget::DateTimeSettingWidget(QWidget *parent) : QDateTimeEdit(parent),
@@ -103,36 +107,42 @@ void DateTimeSettingWidget::nextSection()
     qDebug() << "sec = " << sec;
     if (sec == QDateTimeEdit::YearSection)
     {
+        is_sound_tuning = false;
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ МЕСЯЦА СБРОС ДЛЯ ПЕРЕХОДА К ЧИСЛУ"));
         this->setSelectedSection(QDateTimeEdit::MonthSection);
     }
-    else if (sec == QDateTimeEdit::MonthSection)
+    else if (sec == QDateTimeEdit::MonthSection && !is_sound_tuning)
     {
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ ЧИСЛА СБРОС ДЛЯ ПЕРЕХОДА К ЧАСУ"));
         this->setSelectedSection(QDateTimeEdit::DaySection);
     }
-    else if (sec == QDateTimeEdit::DaySection)
+    else if (sec == QDateTimeEdit::DaySection && !is_sound_tuning)
     {
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ ЧАСА СБРОС ДЛЯ ПЕРЕХОДА К МИНУТАМ"));
         this->setSelectedSection(QDateTimeEdit::HourSection);
     }
-    else if (sec == QDateTimeEdit::HourSection)
+    else if (sec == QDateTimeEdit::HourSection && !is_sound_tuning)
     {
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ МИНУТЫ СБРОС ДЛЯ ПЕРЕХОДА К СЕКУНДАМ"));
         this->setSelectedSection(QDateTimeEdit::MinuteSection);
     }
-    else if (sec == QDateTimeEdit::MinuteSection)
+    else if (sec == QDateTimeEdit::MinuteSection && !is_sound_tuning)
     {
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ СЕКУНДЫ СБРОС ДЛЯ ПЕРЕХОДУ К ВЫБОРУ УСТАНОВЛЕНИЯ ВРЕМЕНИ"));
         this->setSelectedSection(QDateTimeEdit::SecondSection);
     }
-    else if (sec == QDateTimeEdit::SecondSection && !waitingProve)
+    else if (sec == QDateTimeEdit::SecondSection && !waitingProve && !is_sound_tuning)
     {
-        lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПОДТВЕРЖДЕНИЯ ИЛИ СБРОС ДЛЯ УСТАНОВКИ ГОДА"));
+        qDebug() << "waiting!!!";
+        lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПОДТВЕРЖДЕНИЯ ИЛИ СБРОС ДЛЯ РЕГУЛИРОВКИ ЗВУКА"));
         lbl->setFocus();
         waitingProve = true;
-
-//        emit change_volume();
+        is_sound_tuning = true;
+    }
+    else if(is_sound_tuning) {
+        qDebug() << "in sound";
+        lbl->setText(QString("!!! НАЖМИ СБРОС ДЛЯ УВЕЛИЧЕНИЯ ЗВУКА ИЛИ\nРАБОТА ДЛЯ ПОДТВЕРЖДЕНИЯ ЗВУКА ИЛИ\nРАБОТА ДОЛГО ДЛЯ ВЫХОДА"));
+        lbl->setFocus();
     }
     else if (waitingProve)
     {
@@ -141,6 +151,8 @@ void DateTimeSettingWidget::nextSection()
         waitingProve = false;
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ ГОДА СБРОС ДЛЯ ПЕРЕХОДА К МЕСЯЦУ"));
     }
+
+
 
 
 }
