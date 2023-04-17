@@ -21,8 +21,15 @@ public:
 
     int is_number(QCharRef c);
 
+signals:
+    void upd_sound_slider(int sound_value);
+
 public slots:
     void raise();
+
+
+public:
+    bool is_tunning_volume = false;
 
 private:
     QProcess *p = nullptr;

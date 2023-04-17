@@ -2,6 +2,7 @@
 
 Volume_changer::Volume_changer(QObject *parent)
     : QObject{parent}
+    , p(new QProcess(this))
 {
 
 }
@@ -50,6 +51,7 @@ void Volume_changer::get_cur_sound_value()
     qDebug() << "temp str = " << temp;
 
     current_sound_val = temp.toInt();
+    if(current_sound_val == 100) current_sound_val = 0;
     qDebug() << "vol val = " << current_sound_val;
 
 }
@@ -96,4 +98,6 @@ void Volume_changer::raise()
     get_cur_sound_value();
 
     set_volume('+');
+
+    emit upd_sound_slider(current_sound_val);
 }

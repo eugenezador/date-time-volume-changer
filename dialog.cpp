@@ -10,6 +10,7 @@ Dialog::Dialog(QWidget *parent) :
     dst->show();
     connect(ui->pb_Sbros,SIGNAL(clicked(bool)),dst,SLOT(nextSection()));
     connect(ui->pb_Rabota,SIGNAL(clicked(bool)),dst,SLOT(moveUpOrSetTime()));
+    connect(ui->RabotaDolgo, SIGNAL(clicked(bool)), this, SLOT(close()));
 }
 
 Dialog::~Dialog()

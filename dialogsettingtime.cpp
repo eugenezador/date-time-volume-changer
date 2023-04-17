@@ -22,7 +22,7 @@ DialogSettingTime::DialogSettingTime(QWidget *parent) :
 
     // ломается на этой функции
     connect(this, &DialogSettingTime::change_volume, volume_changer, &Volume_changer::raise);
-
+    connect(volume_changer, &Volume_changer::upd_sound_slider, ui->sound_slider, &QSlider::setValue);
 }
 
 DialogSettingTime::~DialogSettingTime()
@@ -38,9 +38,7 @@ void DialogSettingTime::nextSection()
 
         if(dateTimeColumsCounter == 6) {
             emit change_volume();
-
-
-
+            volume_changer->is_tunning_volume = true;
         } else {
             ui->dateTimeEdit->nextSection();
             dateTimeColumsCounter++;
@@ -67,7 +65,19 @@ void DialogSettingTime::nextSection()
 void DialogSettingTime::moveUpOrSetTime()
 {
     if (!this->isHidden()) {
-        ui->dateTimeEdit->moveUpOrSetTime();
+
+        if(volume_changer->is_tunning_volume) {
+            dateTimeColumsCounter = 0;
+            volume_changer->is_tunning_volume = false;
+            qDebug() << "exit volume";
+            ui->dateTimeEdit->waitingProve = false;
+            ui->dateTimeEdit->setCurrentSection(QDateTimeEdit::YearSection);
+//            ui->dateTimeEdit->setFocus(Qt::OtherFocusReason);
+             ui->dateTimeEdit->moveUpOrSetTime();
+
+        } else {
+            ui->dateTimeEdit->moveUpOrSetTime();
+        }
 
     }
 }
@@ -90,6 +100,7 @@ void DateTimeSettingWidget::setLabel(QLabel *in)
 void DateTimeSettingWidget::nextSection()
 {
     Section sec = this->currentSection();
+    qDebug() << "sec = " << sec;
     if (sec == QDateTimeEdit::YearSection)
     {
         lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПРИБАВЛЕНИЯ МЕСЯЦА СБРОС ДЛЯ ПЕРЕХОДА К ЧИСЛУ"));
@@ -117,7 +128,7 @@ void DateTimeSettingWidget::nextSection()
     }
     else if (sec == QDateTimeEdit::SecondSection && !waitingProve)
     {
-        lbl->setText(QString("НАЖМИ СТАРТ ДЛЯ ПОДТВЕРЖДЕНИЯ ИЛИ СБРОС ДЛЯ УСТАНОВКИ ГОДА"));
+        lbl->setText(QString("НАЖМИ РАБОТА ДЛЯ ПОДТВЕРЖДЕНИЯ ИЛИ СБРОС ДЛЯ УСТАНОВКИ ГОДА"));
         lbl->setFocus();
         waitingProve = true;
 
@@ -140,6 +151,7 @@ void DateTimeSettingWidget::moveUpOrSetTime()
     if (waitingProve)
     {
         FILE *fileToSetTime = nullptr;
+
         fileToSetTime = fopen("set_date_time.sh","wt");
         if (fileToSetTime != nullptr)
         {
