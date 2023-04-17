@@ -38,11 +38,10 @@ void DialogSettingTime::nextSection()
 
         if(dateTimeColumsCounter == 6) {
             emit change_volume();
-            ui->dateTimeEdit->nextSection();
         } else {
-            ui->dateTimeEdit->nextSection();
             dateTimeColumsCounter++;
         }
+        ui->dateTimeEdit->nextSection();
 
     }
     else
