@@ -20,7 +20,7 @@ DialogSettingTime::DialogSettingTime(QWidget *parent) :
     tmr.setSingleShot(true);
     //    tmr.s
 
-    // ломается на этой функции
+
     connect(this, &DialogSettingTime::change_volume, volume_changer, &Volume_changer::raise);
     connect(volume_changer, &Volume_changer::upd_sound_slider, ui->sound_slider, &QSlider::setValue);
 }
